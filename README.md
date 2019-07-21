@@ -1,5 +1,5 @@
 # either_stream-rs
-###A trait providing combinators on asynchronous streams of tagged unions
+### A trait providing combinators on asynchronous streams of tagged unions
 
 
 Provides the `EitherStreamExt` trait, allowing to apply functions
