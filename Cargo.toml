@@ -1,0 +1,8 @@
+[package]
+name = "either_stream"
+version = "0.1.0"
+authors = ["Daniel Bischof <daniel.bischof@protonmail.com>"]
+edition = "2018"
+
+[dependencies]
+futures = "0.1"
