@@ -1,5 +1,7 @@
 mod map_left;
 mod map_right;
+mod and_then_left;
+mod and_then_right;
 
 use futures::future;
 use futures::prelude::*;
@@ -25,6 +27,18 @@ pub trait EitherStreamExt<L, R>: Stream<Item = future::Either<L, R>> {
     where
         F: FnMut(R) -> U,
         Self: Sized;
+
+    fn and_then_right<U, F>(self, f: F) -> and_then_right::AndThenRight<Self, F, U>
+    where
+        F: FnMut(R) -> U,
+        Self: Sized,
+        U: IntoFuture<Error = Self::Error>;
+    
+    fn and_then_left<U, F>(self, f: F) -> and_then_left::AndThenLeft<Self, F, U>
+    where
+        F: FnMut(L) -> U,
+        Self: Sized,
+        U: IntoFuture<Error = Self::Error>;
 }
 
 impl<L, R, T: Stream<Item = future::Either<L, R>>> EitherStreamExt<L, R> for T {
@@ -42,5 +56,23 @@ impl<L, R, T: Stream<Item = future::Either<L, R>>> EitherStreamExt<L, R> for T {
         Self: Sized,
     {
         map_right::new(self, f)
+    }
+
+    fn and_then_left<U, F>(self, f: F) -> and_then_left::AndThenLeft<Self, F, U>
+    where
+        F: FnMut(L) -> U,
+        Self: Sized,
+        U: IntoFuture<Error = Self::Error>
+    {
+        and_then_left::new(self, f)
+    }
+
+    fn and_then_right<U, F>(self, f: F) -> and_then_right::AndThenRight<Self, F, U>
+    where
+        F: FnMut(R) -> U,
+        Self: Sized,
+        U: IntoFuture<Error = Self::Error>
+    {
+        and_then_right::new(self, f)
     }
 }
